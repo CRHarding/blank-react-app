@@ -18,7 +18,9 @@ export default function MemberForm(props) {
     <form onSubmit={onSubmit}>
       <div>
         <h2>Add a member</h2>
-        <button disabled={disabled}>Submit</button>
+        <button disabled={disabled} data-cy="submitButton">
+          Submit
+        </button>
         <div>
           <div>{errors.username}</div>
           <div>{errors.email}</div>
@@ -51,7 +53,12 @@ export default function MemberForm(props) {
 
         <label>
           Role
-          <select onChange={onChange} value={values.role} name="role">
+          <select
+            onChange={onChange}
+            value={values.role}
+            name="role"
+            data-cy="role"
+          >
             <option value="">- Select an option -</option>
             <option value="White Belt">White Belt</option>
             <option value="Blue Belt">Blue Belt</option>

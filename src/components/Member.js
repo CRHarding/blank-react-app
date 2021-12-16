@@ -8,11 +8,11 @@ function Member({ details }) {
 
   return (
     <div>
-      {!details.first_name ? (
+      {/* {!details.first_name ? (
         <p>First Name: {details.username}</p>
       ) : (
         <p>First Name: {details.first_name}</p>
-      )}
+      )} */}
       {!details.last_name ? "" : <p>Last Name: {details.last_name}</p>}
       {!details.role ? "" : <p>Role: {details.role}</p>}
       <p>Email: {details.email}</p>
