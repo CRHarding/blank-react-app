@@ -1,23 +1,84 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import * as yup from "yup";
+import Form from "./Components/Form.js";
+import User from "./Components/User";
+import formSchema from "./formSchema";
+
+const newUserInfo = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  password: "",
+  termsOfService: false,
+};
+
+const initialUsers = [];
+const initialDisabled = true;
+
+const initialFormErrors = {
+  first_name: "",
+  last_name: "",
+  email: "",
+  password: "",
+};
 
 function App() {
+  const [newUser, setNewUser] = useState(newUserInfo);
+  const [users, setUsers] = useState(initialUsers);
+  const [disabled, setDisabled] = useState(initialDisabled);
+  const [formErrors, setFormErrors] = useState(initialFormErrors);
+
+  const postUser = (newUsers) => {
+    axios
+      .post("https://reqres.in/api/users", newUsers)
+      .then((response) => {
+        setUsers([response.data, ...users]);
+      })
+      .catch((error) => console.log(error))
+      .finally(() => setNewUser(newUserInfo));
+  };
+
+  const validate = (name, value) => {
+    yup
+      .reach(formSchema, name)
+      .validate(value)
+      .then(() => setFormErrors({ ...formErrors, [name]: "" }))
+      .catch((err) => setFormErrors({ ...formErrors, [name]: err.errors[0] }));
+  };
+
+  const change = (name, value) => {
+    validate(name, value);
+    setNewUser({ ...newUser, [name]: value });
+  };
+
+  const submit = () => {
+    const newUsers = {
+      first_name: newUser.first_name.trim(),
+      last_name: newUser.last_name.trim(),
+      email: newUser.email.trim(),
+      password: newUser.password.trim(),
+      termsOfService: newUser.termsOfService,
+    };
+    console.log("work");
+    postUser(newUsers);
+  };
+
+  useEffect(() => {
+    formSchema.isValid(newUser).then((valid) => setDisabled(!valid));
+  }, [newUser]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>User Onboarding</h1>
+      <Form
+        user={newUser}
+        change={change}
+        submit={submit}
+        disabled={disabled}
+        errors={formErrors}
+      />
+      <User users={users} />
     </div>
   );
 }
